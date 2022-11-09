@@ -1,3 +1,7 @@
 xcuserdata
 .DS_Store
 Thumbs.db
+*.o
+srv
+srv.*
+*.dSYM

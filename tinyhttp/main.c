@@ -17,6 +17,7 @@ void tinyhttp_listen(tf_tcp_ref server,
                      tf_socket_t lsock,
                      tf_data_ref meta) {
     (void)(meta);
+    (void)(server);
     
     switch (ctype) {
         case TF_TCP_CONNECTION_NEW: {
