@@ -32,3 +32,5 @@ tf_data_ref tf_struct_alloc(const tf_index_t size);
     if (ptr) \
         (*ptr) = value; \
 }
+
+int tf_keep_greater(const int v1, const int v2);

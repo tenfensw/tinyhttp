@@ -96,6 +96,21 @@ bool tf_int_array_push(tf_int_array_ref array, const int value) {
     return false;
 }
 
+bool tf_int_array_push_replacing_zeroes(tf_int_array_ref array,
+                                        const int value) {
+    if (!array)
+        return false;
+    
+    for (tf_index_t index = 0; index < array->count; index++) {
+        if (array->raw[index] <= 0) {
+            array->raw[index] = value;
+            return true;
+        }
+    }
+    
+    return tf_int_array_push(array, value);
+}
+
 int tf_int_array_pop(tf_int_array_ref array) {
     if (!array || array->count < 1)
         return 0;

@@ -14,6 +14,8 @@ tf_int_array_ref tf_int_array_init(const tf_index_t capacity,
                                    const bool autoextend);
 
 bool tf_int_array_push(tf_int_array_ref array, const int value);
+bool tf_int_array_push_replacing_zeroes(tf_int_array_ref array,
+                                        const int value);
 int tf_int_array_pop(tf_int_array_ref array);
 
 int tf_int_array_get_at(const tf_int_array_ref array, const tf_index_t index,

@@ -35,3 +35,7 @@ tf_data_ref tf_struct_alloc(const tf_index_t size) {
     
     return result;
 }
+
+int tf_keep_greater(const int v1, const int v2) {
+    return ((v1 >= v2) ? v1 : v2);
+}

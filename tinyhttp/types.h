@@ -27,6 +27,9 @@ typedef struct tf_hash_s* tf_hash_ref;
 
 /// port type
 typedef uint16_t tf_port_t;
+/// socket type
+typedef int tf_socket_t;
+
 /// TCP server control object
 typedef struct tf_tcp_s* tf_tcp_ref;
 
@@ -37,6 +40,16 @@ typedef enum {
     TF_TCP_CONNECTION_CLOSE
 } tf_tcp_connection_type_t;
 
+///
 /// TCP server listen handler callback
-typedef void (*tf_tcp_callback_t)(tf_tcp_connection_type_t,
-                                  int);
+/// Arguments:
+/// - TCP server instance
+/// - connection state/type
+/// - client socket
+/// - additional user-specified data that needs to be passed to the call-
+///   back
+///
+typedef void (*tf_tcp_callback_t)(tf_tcp_ref,
+                                  tf_tcp_connection_type_t,
+                                  tf_socket_t,
+                                  tf_data_ref);
