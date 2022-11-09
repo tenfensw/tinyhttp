@@ -45,11 +45,15 @@ typedef enum {
 /// Arguments:
 /// - TCP server instance
 /// - connection state/type
+/// - data sent by the client
+/// - data length
 /// - client socket
 /// - additional user-specified data that needs to be passed to the call-
 ///   back
 ///
 typedef void (*tf_tcp_callback_t)(tf_tcp_ref,
                                   tf_tcp_connection_type_t,
+                                  tf_data_ref const,
+                                  const tf_index_t,
                                   tf_socket_t,
                                   tf_data_ref);

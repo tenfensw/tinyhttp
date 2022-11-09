@@ -15,6 +15,7 @@
 //
 
 #define TF_TCP_IP_LISTEN_ANY NULL
+#define TF_TCP_MAX_PKT_SIZE 1024
 
 tf_tcp_ref tf_tcp_init(const char* ipv4a,
                        const tf_port_t port,

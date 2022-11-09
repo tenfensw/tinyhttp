@@ -171,9 +171,9 @@ bool tf_tcp_listen(tf_tcp_ref tcp, const tf_tcp_callback_t cb,
             
             tf_socket_t newcl = accept(tcp->main_socket,
                                        &claddr, &clalen);
-            if (newcl >= 0) {
+            if (newcl > 0) {
                 // accepted, call the callback for proper backend-side handling
-                cb(tcp, TF_TCP_CONNECTION_NEW, newcl, cbmeta);
+                cb(tcp, TF_TCP_CONNECTION_NEW, NULL, 0, newcl, cbmeta);
                 // then save the socket for further use
                 tf_int_array_push_replacing_zeroes(tcp->client_sockets,
                                                    newcl);
@@ -188,7 +188,19 @@ bool tf_tcp_listen(tf_tcp_ref tcp, const tf_tcp_callback_t cb,
                 
                 if (FD_ISSET(current, &tcp->client_descs)) {
                     // read incoming data
-                    // TODO
+                    // TODO: support reading more than 1024 pkt sizes
+                    tf_index_t dlen = 0;
+                    tf_data_ref dread = tf_socket_read_data(current, &dlen);
+                    
+                    if (dlen < 1) {
+                        // probably closing connection
+                        cb(tcp, TF_TCP_CONNECTION_CLOSE, dread, dlen, current, cbmeta);
+                        
+                        // close & zero out connection
+                        close(current);
+                        tf_int_array_set_at(tcp->client_sockets, iter, 0);
+                    } else
+                        cb(tcp, TF_TCP_CONNECTION_CONTINUE, dread, dlen, current, cbmeta);
                 }
             }
         }
@@ -218,4 +230,45 @@ void tf_tcp_release(tf_tcp_ref tcp) {
     // close main socket too
     close(tcp->main_socket);
     free(tcp);
+}
+
+//
+// socket ops public
+//
+
+tf_data_ref tf_socket_read_data(tf_socket_t socket,
+                                tf_index_t* sizep) {
+    tf_data_ref result = malloc(TF_TCP_MAX_PKT_SIZE);
+    bzero(result, TF_TCP_MAX_PKT_SIZE);
+    
+    ssize_t alen = read(socket, result, TF_TCP_MAX_PKT_SIZE);
+    if (alen < 1) {
+        // fail
+        perror(strerror(errno));
+        
+        free(result);
+        TF_PTR_SET(sizep, 0);
+        
+        return NULL;
+    }
+    
+    TF_PTR_SET(sizep, (tf_index_t)(alen));
+    return result;
+}
+
+bool tf_socket_send_data(tf_socket_t socket,
+                         const tf_data_ref data,
+                         const tf_index_t dlen) {
+    if (!data || dlen < 1) {
+        perror("cannot send NULL data");
+        return false;
+    }
+    
+    if (send(socket, data, dlen, 0) < 0) {
+        // fail
+        perror(strerror(errno));
+        return false;
+    }
+    
+    return true;
 }
